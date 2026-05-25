@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment</title>
+</head>
+<body>
+
+<h2>Enter Amount</h2>
+
+<input type="number" id="amount" placeholder="Enter Amount">
+
+<button onclick="payNow()">Pay Now</button>
+
+<script>
+
+    async function payNow() {
+
+        // get amount from input
+        const amount = document.getElementById("amount").value;
+
+        // call backend
+        const response = await fetch(
+            'https://minute-containing-advertiser-residence.trycloudflare.com/api/payments/create-order',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    amount: amount,
+                    currency: 'INR'
+                })
+            }
+        );
+
+        const order = await response.json();
+
+        console.log(order);
+
+        // Razorpay payment window
+        const options = {
+
+            key: "rzp_test_SmmOkqS39GTI7I",
+
+            amount: order.amount,
+
+            currency: order.currency,
+
+            name: "OjhaPayment Service",
+
+            description: "Test Payment",
+
+            order_id: order.id,
+
+            handler: function (response) {
+
+                alert("Payment Success");
+
+                console.log(response);
+            },
+
+            theme: {
+                color: "#3399cc"
+            }
+        };
+
+        const rzp = new Razorpay(options);
+
+        rzp.open();
+    }
+
+</script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</body>
+</html>
